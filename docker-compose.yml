@@ -1,0 +1,11 @@
+services:
+  discord-bot:
+    build: . 
+    container_name: discord-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: python src/main.py
+
+    tty: true
+    stdin_open: true
