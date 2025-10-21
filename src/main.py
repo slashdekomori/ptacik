@@ -16,6 +16,7 @@ class Bot(commands.Bot):
 
     async def setup_hook(self):
         cogs_dir = Path(__file__).parent / "cogs"
+
         for filename in os.listdir(cogs_dir):
             if filename.endswith('.py') and not filename.startswith('_'):
                 try:

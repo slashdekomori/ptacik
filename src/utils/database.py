@@ -2,9 +2,6 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 from .config import settings
 import asyncio
-# Таблица workers
-# discord_id: str ; index = 0
-# penalty: int ; index = 1
 
 class Database:
     engine = create_async_engine(settings.DATABASE_URL)
