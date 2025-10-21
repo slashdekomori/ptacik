@@ -6,20 +6,21 @@ import asyncio
 class Database:
     engine = create_async_engine(settings.DATABASE_URL)
 
-    async def add_worker_if_not_exists(self, id: str):
+    async def add_user_if_not_exists(self, id: str):
         async with self.engine.connect() as conn:
             result = await conn.execute(
-                text("SELECT 1 FROM workers WHERE discord_id = :id"),
+                text("SELECT 1 FROM users WHERE discord_id = :id"),
                 {"id": id}
             )
             if result.first() is None:
                 await conn.execute(
-                    text("INSERT INTO workers (discord_id) VALUES (:id)"),
+                    text("INSERT INTO users (discord_id) VALUES (:id)"),
                     {"id": id}
                 )
                 await conn.commit()
+        return
 
-    async def worker_exists(self,id: str):
+    async def user_exists(self,id: str):
             async with self.engine.connect() as conn:
                 result = await conn.execute(
                     text("SELECT 1 FROM workers WHERE discord_id = :id"),
@@ -28,13 +29,12 @@ class Database:
                 return result.first() is not None
             
         
-    async def get_workers(self,id: str):
+    async def get_user(self,id: str):
         async with self.engine.connect() as conn:
-            if not await self.worker_exists(id):
-                await self.add_worker_if_not_exists(id)
+            await self.add_user_if_not_exists(id)
 
             result = await conn.execute(
-                text("SELECT * FROM workers WHERE discord_id = :id"),
+                text("SELECT * FROM users WHERE discord_id = :id"),
                 {"id": id}
             )
             row = result.mappings().first()

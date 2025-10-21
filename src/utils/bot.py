@@ -14,23 +14,24 @@ class Bot(commands.Bot):
         super().__init__(command_prefix=commands.when_mentioned_or("!"), intents=intents)
 
     async def setup_hook(self):
-        cogs_dir = Path(__file__).parent / "cogs"
+        src_dir = Path(__file__).parent.parent
+        cogs_dir = src_dir / "cogs"
+
+        sys.path.append(str(src_dir))  # ensure 'src' is in PYTHONPATH
 
         for path in cogs_dir.rglob("*.py"):
             if path.name.startswith("_"):
                 continue
 
-            module = (
-                "cogs." 
-                + str(path.relative_to(cogs_dir)).replace("/", ".").replace("\\", ".")[:-3]
-            )
+            relative_path = path.relative_to(src_dir)
+            module = ".".join(relative_path.with_suffix("").parts)  # cogs.general.profile
 
             try:
                 await self.load_extension(module)
                 logger.info(f"Loaded extension: {module}")
             except Exception as e:
-                logger.info(f"Failed to load extension {module}. {e}")
-                sys.exit()
+                logger.error(f"Failed to load extension {module}: {e}")
+                sys.exit(1)
 
         await self.tree.sync()
         logger.info("Slash commands synced.")
