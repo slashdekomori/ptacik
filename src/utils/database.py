@@ -19,16 +19,8 @@ class Database:
                 )
                 await conn.commit()
         return
-
-    async def user_exists(self,id: str):
-            async with self.engine.connect() as conn:
-                result = await conn.execute(
-                    text("SELECT 1 FROM workers WHERE discord_id = :id"),
-                    {"id": id}
-                    )
-                return result.first() is not None
-            
-        
+           
+    # Returns - {'discord_id': 456802396874735616, 'balance': 0, 'last_claimed': None, 'voice_time': 0, 'message_count': 0}
     async def get_user(self,id: str):
         async with self.engine.connect() as conn:
             await self.add_user_if_not_exists(id)
@@ -40,48 +32,36 @@ class Database:
             row = result.mappings().first()
             return row
         
-    async def give_penalty(self,id: str):
+    async def plus_balance(self, id: str, val: int):
         async with self.engine.connect() as conn:
-            if not await self.worker_exists(id):
-                await self.add_worker_if_not_exists(id)
+            if val < 0:
+                return
+            await self.add_user_if_not_exists(id)
 
             await conn.execute(
-                text("UPDATE workers SET penalty = penalty + 1 WHERE discord_id = :id"),
-                {"id": id}
-                )
-            await conn.commit()
-
-    async def forgive_penalty_handle(self, id: str):
-        async with self.engine.connect() as conn:
-            if not await self.worker_exists(id):
-                await self.add_worker_if_not_exists(id)
-
-            await conn.execute(
-                text("UPDATE workers SET penalty = penalty - 1 WHERE discord_id = :id AND penalty > 0"),
-                {"id": id}
+                text("UPDATE users SET balance = balance + :val WHERE discord_id = :id"),
+                {"id": id, "val": val}
             )
             await conn.commit()
 
-
-    async def start_work_handle(self,id: str, time_worked_seconds: int):
+    async def minus_balance(self, id: str, val: int):
         async with self.engine.connect() as conn:
-            if not await self.worker_exists(id):
-                await self.add_worker_if_not_exists(id)
+            if val < 0:
+                return
+            await self.add_user_if_not_exists(id)
 
             await conn.execute(
-                text("UPDATE workers SET work_time = work_time + :time_worked_seconds WHERE discord_id = :id"),
-                {"id": id, "time_worked_seconds": time_worked_seconds}
-                )
+                text("UPDATE users SET balance = balance - :val WHERE discord_id = :id AND balance >= :val"),
+                {"id": id, "val": val}
+            )
             await conn.commit()
 
-    async def break_handle(self,id: str, break_time_seconds: int):
+    async def last_claimed(self, id: str, val: str):
         async with self.engine.connect() as conn:
-            if not await self.worker_exists(id):
-                await self.add_worker_if_not_exists(id)
+            await self.add_user_if_not_exists(id)
 
             await conn.execute(
-                text("UPDATE workers SET break_time = break_time + :break_time_seconds WHERE discord_id = :id"),
-                {"id": id, "break_time_seconds": break_time_seconds}
-                )
+                text("UPDATE users SET last_claimed = :val WHERE discord_id = :id"),
+                {"id": id, "val": val}
+            )
             await conn.commit()
-

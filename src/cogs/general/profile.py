@@ -16,10 +16,8 @@ class General(commands.Cog):
         await interaction.response.defer(thinking=True)
         target = user or interaction.user
 
-        await self.db.add_user_if_not_exists(target.id)
-
         if target.bot:
-            await interaction.response.send_message("Нельзя смотреть профиль ботов.", ephemeral=True)
+            await interaction.followup.send_message("Нельзя смотреть профиль ботов.", ephemeral=True)
             return
 
         user = await self.db.get_user(target.id)
