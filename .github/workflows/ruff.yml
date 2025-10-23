@@ -1,0 +1,30 @@
+name: Ruff Auto Fix
+
+on: [push]
+
+jobs:
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: astral-sh/ruff-action@v3
+        with:
+          args: check --fix .
+
+      - name: Format with Ruff
+        run: ruff format .
+
+      - name: Commit and push fixes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          if git diff --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: apply Ruff fixes"
+            git push
+          fi
