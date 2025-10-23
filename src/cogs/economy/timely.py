@@ -1,7 +1,6 @@
 import discord
 from discord import app_commands, Interaction, User
 from discord.ext import commands
-import time
 
 from datetime import datetime, timedelta, timezone
 
