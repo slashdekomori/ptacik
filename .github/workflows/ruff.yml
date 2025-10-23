@@ -17,9 +17,6 @@ jobs:
       - name: Install Ruff for formatting
         run: pip install ruff
 
-      - name: Show what will be formated with Ruff
-        run: ruff format --diff .
-
       - name: Format with Ruff
         run: ruff format .
 
