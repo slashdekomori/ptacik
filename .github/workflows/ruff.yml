@@ -17,8 +17,10 @@ jobs:
       - name: Install Ruff for formatting
         run: pip install ruff
 
-      - name: Format with Ruff
+      - name: Show what will be formated with Ruff
         run: ruff format --diff .
+
+      - name: Format with Ruff
         run: ruff format .
 
       - name: Commit and push fixes
