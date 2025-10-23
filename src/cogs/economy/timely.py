@@ -1,8 +1,8 @@
 import discord
-from discord import app_commands, Interaction, User
+from discord import app_commands
 from discord.ext import commands
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 
 class Timely(commands.Cog):
@@ -29,7 +29,7 @@ class Timely(commands.Cog):
             desc = f"{interaction.user.mention}, Вы уже забрали свою временную награду! Возвращайтесь <t:{unix_next}:R>"
 
         embed = discord.Embed(
-            title=f"Временная награда", description=desc, color=discord.Color.blurple()
+            title="Временная награда", description=desc, color=discord.Color.blurple()
         )
         embed.set_thumbnail(url=interaction.user.display_avatar.url)
 

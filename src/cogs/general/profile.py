@@ -1,8 +1,7 @@
 import discord
-from discord import app_commands, Interaction, User
+from discord import app_commands
 from discord.ext import commands
 
-import humanfriendly
 
 devs = [
     749001740170559570,
@@ -37,7 +36,7 @@ class General(commands.Cog):
 
         embed = discord.Embed(
             title=f"Профиль {target.name}",
-            description=f"Информация о пользователе",
+            description="Информация о пользователе",
             color=discord.Color.blurple(),
         )
 
