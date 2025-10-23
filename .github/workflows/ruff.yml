@@ -1,5 +1,4 @@
 name: Ruff Auto Fix
-
 on: [push]
 
 jobs:
@@ -10,14 +9,10 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: astral-sh/ruff-action@v3
-        with:
-          args: check --fix .
-
-      - name: Install Ruff for formatting
+      - name: Install Ruff
         run: pip install ruff
 
-      - name: Format with Ruff
+      - name: Run Ruff formatter
         run: ruff format .
 
       - name: Commit and push fixes
@@ -25,9 +20,4 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add .
-          if git diff --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "chore: apply Ruff fixes"
-            git push
-          fi
+          git diff --quiet || (git commit -m "chore: apply Ruff fixes" && git push)
