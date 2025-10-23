@@ -7,11 +7,14 @@ import sys
 
 logger = get_logger()
 
+
 class Bot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.all()
         self.db = Database()
-        super().__init__(command_prefix=commands.when_mentioned_or("!"), intents=intents)
+        super().__init__(
+            command_prefix=commands.when_mentioned_or("!"), intents=intents
+        )
 
     async def setup_hook(self):
         src_dir = Path(__file__).parent.parent
@@ -24,7 +27,9 @@ class Bot(commands.Bot):
                 continue
 
             relative_path = path.relative_to(src_dir)
-            module = ".".join(relative_path.with_suffix("").parts)  # cogs.general.profile
+            module = ".".join(
+                relative_path.with_suffix("").parts
+            )  # cogs.general.profile
 
             try:
                 await self.load_extension(module)
