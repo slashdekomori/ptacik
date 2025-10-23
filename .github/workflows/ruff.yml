@@ -19,6 +19,7 @@ jobs:
 
       - name: Format with Ruff
         run: ruff format --diff .
+        run: ruff format .
 
       - name: Commit and push fixes
         run: |
