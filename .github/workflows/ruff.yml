@@ -14,8 +14,11 @@ jobs:
         with:
           args: check --fix .
 
+      - name: Install Ruff for formatting
+        run: pip install ruff
+
       - name: Format with Ruff
-        run: ruff format .
+        run: ruff format --diff .
 
       - name: Commit and push fixes
         run: |
