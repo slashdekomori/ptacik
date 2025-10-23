@@ -6,18 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Ruff
-        run: pip install ruff
-
-      - name: Run Ruff formatter
-        run: ruff format .
-
-      - name: Commit and push fixes
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add .
-          git diff --quiet || (git commit -m "chore: apply Ruff fixes" && git push)
+      - name: ruff-action
+        run: ruff check --fix
+      
+      - name: ruff format
+        run: ruff format
