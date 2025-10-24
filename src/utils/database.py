@@ -29,10 +29,32 @@ class Database:
             row = result.mappings().first()
             return row
 
-    async def plus_balance(self, id: str, val: int):
+    async def get_transactions(self, id: str):
         async with self.engine.connect() as conn:
-            if val < 0:
-                return
+            await self.add_user_if_not_exists(id)
+
+            result = await conn.execute(
+                text("SELECT * FROM transactions WHERE discord_id = :id"), {"id": id}
+            )
+            rows = result.mappings().all()
+            return rows
+
+
+    async def add_transaction(self, discord_id: str, type_: int, quantity: int, description: str):
+        async with self.engine.connect() as conn:
+            await conn.execute(
+                text("""
+                    INSERT INTO transactions (discord_id, type, quantity, description, datetime)
+                    VALUES (:discord_id, :type, :quantity, :description, NOW())
+                    """),
+                {"discord_id": discord_id, "type": type_, "quantity": quantity, "description": description}, 
+            )
+            await conn.commit()
+
+    async def plus_balance(self, id: str, val: int, description: str = "Manual"):
+        if val < 0:
+            return
+        async with self.engine.connect() as conn:
             await self.add_user_if_not_exists(id)
 
             await conn.execute(
@@ -42,20 +64,24 @@ class Database:
                 {"id": id, "val": val},
             )
             await conn.commit()
+            await self.add_transaction(id, 1, val, description)
 
-    async def minus_balance(self, id: str, val: int):
+    async def minus_balance(self, id: str, val: int, description: str = "Manual"):
+        if val < 0:
+            return
         async with self.engine.connect() as conn:
-            if val < 0:
-                return
             await self.add_user_if_not_exists(id)
-
-            await conn.execute(
+            result = await conn.execute(
                 text(
                     "UPDATE users SET balance = balance - :val WHERE discord_id = :id AND balance >= :val"
                 ),
                 {"id": id, "val": val},
             )
             await conn.commit()
+
+        # only add transaction if balance was actually changed
+        if result.rowcount > 0:
+            await self.add_transaction(id, 0, val, description)
 
     async def last_claimed(self, id: str, val: str):
         async with self.engine.connect() as conn:

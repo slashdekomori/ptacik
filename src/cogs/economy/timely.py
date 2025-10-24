@@ -21,8 +21,7 @@ class Timely(commands.Cog):
         unix_next = int((now + timedelta(hours=12)).timestamp())
 
         if now - last_claimed >= timedelta(hours=12):
-            # Give reward
-            await self.db.plus_balance(interaction.user.id, 50)
+            await self.db.plus_balance(interaction.user.id, 50, "Ежедневная награда")
             await self.db.last_claimed(interaction.user.id, now)
             desc = f"{interaction.user.mention}, Вы забрали свои 50 монет. Возвращайтесь <t:{unix_next}:R>"
         else:
