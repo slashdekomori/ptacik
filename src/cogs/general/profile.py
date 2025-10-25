@@ -16,9 +16,13 @@ class General(commands.Cog):
         self.bot = bot
         self.db = bot.db
 
-    @app_commands.command(name="profile", description="Узнать информацию о себе или о ком то.")
+    @app_commands.command(
+        name="profile", description="Узнать информацию о себе или о ком то."
+    )
     @app_commands.describe(user="Пользователь о котором хотите посмотреть информацию.")
-    async def profile(self, interaction: discord.Interaction, user: discord.User = None):
+    async def profile(
+        self, interaction: discord.Interaction, user: discord.User = None
+    ):
         await interaction.response.defer(thinking=True)
         target = user or interaction.user
 
