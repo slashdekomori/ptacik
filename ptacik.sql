@@ -22,11 +22,10 @@ CREATE TABLE "usersclans" (
 );
 
 CREATE TABLE "transactions" (
-  "transaction_id" serial PRIMARY KEY,
   "discord_id" bigint NOT NULL,
   "type" int NOT NULL,
   "quantity" int NOT NULL,
-  "description" text,
+  "description" text DEFAULT 'None',
   "datetime" timestamp NOT NULL DEFAULT now(),
   FOREIGN KEY ("discord_id") REFERENCES "users" ("discord_id")
 );
