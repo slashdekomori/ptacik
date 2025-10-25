@@ -15,9 +15,12 @@ jobs:
 
       - uses: astral-sh/ruff-action@v3
         with:
-          args: |
-            check --fix
-            format
+          args: check --fix
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: astral-sh/ruff-action@v3
+        with:
+          args: format 
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: configure git
