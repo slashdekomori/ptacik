@@ -39,15 +39,21 @@ class Database:
             rows = result.mappings().all()
             return rows
 
-
-    async def add_transaction(self, discord_id: str, type_: int, quantity: int, description: str):
+    async def add_transaction(
+        self, discord_id: str, type_: int, quantity: int, description: str
+    ):
         async with self.engine.connect() as conn:
             await conn.execute(
                 text("""
                     INSERT INTO transactions (discord_id, type, quantity, description, datetime)
                     VALUES (:discord_id, :type, :quantity, :description, NOW())
                     """),
-                {"discord_id": discord_id, "type": type_, "quantity": quantity, "description": description}, 
+                {
+                    "discord_id": discord_id,
+                    "type": type_,
+                    "quantity": quantity,
+                    "description": description,
+                },
             )
             await conn.commit()
 
