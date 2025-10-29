@@ -37,7 +37,7 @@ class General(commands.Cog):
         embed = discord.Embed(
             title=f"Профиль {target.name}",
             description="Информация о пользователе",
-            color=discord.Color.blurple(),
+            color=discord.Color.from_str("#494949"),
         )
 
         embed.set_thumbnail(url=target.display_avatar.url)

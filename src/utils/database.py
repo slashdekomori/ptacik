@@ -4,7 +4,13 @@ from .pydanticConfig import settings
 
 
 class Database:
-    engine = create_async_engine(settings.DATABASE_URL)
+    engine = create_async_engine(
+        settings.DATABASE_URL, 
+        connect_args={"server_settings": {"timezone": "UTC"}},
+    )
+
+    async def get_conn(self):
+        return await self.engine.connect()
 
     async def add_user_if_not_exists(self, id: str):
         async with self.engine.connect() as conn:

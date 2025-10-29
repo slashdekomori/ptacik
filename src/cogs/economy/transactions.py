@@ -2,7 +2,6 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-
 class PagedEmbedView(discord.ui.View):
     def __init__(self, pages: list[discord.Embed]):
         super().__init__(timeout=None)
@@ -48,31 +47,33 @@ class Transactions(commands.Cog):
             )
             return
 
-        # Загружаем транзакции из БД
         transactions = await self.db.get_transactions(target.id)
 
         if not transactions:
             await interaction.followup.send("У этого пользователя нет транзакций.")
             return
 
-        # Создаём страницы по 5 записей
         per_page = 5
         pages = []
         for i in range(0, len(transactions), per_page):
             chunk = transactions[i : i + per_page]
             embed = discord.Embed(
                 title=f"Транзакции {target.name} — стр. {i // per_page + 1}",
-                color=discord.Color.blurple(),
+                color=discord.Color.from_str("#494949"),
             )
             for t in chunk:
+                dt = t.get('datetime')
+                unix_ts = int(dt.timestamp())
+                plusminus = '➕' if t.get('type') == 1 else '➖'
+                quantity = t.get('quantity', 0)
                 embed.add_field(
-                    name=f"{t.get('description', 'Без описания')} — {t.get('quantity', 0)}",
-                    value=f"{'➕' if t.get('type') == 1 else '➖'} • Дата: <t:{(int(t.get('datetime').timestamp()))}:R>",
+                    name=f"{plusminus} {quantity}  / <t:{int(unix_ts)}:f>",
+                    value=f"{t.get('description')}",
                     inline=False,
                 )
             pages.append(embed)
+            embed.set_thumbnail(url=interaction.user.display_avatar.url)
 
-        # Отправляем первую страницу с кнопками
         view = PagedEmbedView(pages)
         await interaction.followup.send(embed=pages[0], view=view)
 

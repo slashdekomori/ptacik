@@ -1,7 +1,7 @@
 CREATE TABLE "users" (
   "discord_id" bigint PRIMARY KEY,
   "balance" int NOT NULL DEFAULT 0,
-  "last_claimed" timestamp DEFAULT (now() - interval '13 hours'),
+  "last_claimed" timestamptz DEFAULT (now() - interval '13 hours'),
   "voice_time" bigint NOT NULL DEFAULT 0,
   "message_count" int NOT NULL DEFAULT 0,
   "married_id" bigint
@@ -26,7 +26,7 @@ CREATE TABLE "transactions" (
   "type" int NOT NULL,
   "quantity" int NOT NULL,
   "description" text DEFAULT 'None',
-  "datetime" timestamp NOT NULL DEFAULT now(),
+  "datetime" timestamptz NOT NULL DEFAULT now(),
   FOREIGN KEY ("discord_id") REFERENCES "users" ("discord_id")
 );
 
@@ -34,3 +34,4 @@ COMMENT ON COLUMN "transactions"."type" IS '1 = +; 0 = -';
 COMMENT ON COLUMN "transactions"."description" IS 'from where';
 
 ALTER TABLE "clans" ADD FOREIGN KEY ("leader_id") REFERENCES "users" ("discord_id");
+ALTER DATABASE discord SET timezone TO 'UTC';
