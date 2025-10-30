@@ -2,7 +2,6 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from datetime import datetime, timedelta, timezone
 
 commisionPercent = 5
 
@@ -16,11 +15,11 @@ class View(discord.ui.View):
 
     async def on_timeout(self):
         """Called automatically when 180 seconds pass with no interaction."""
-        commission = round(self.amount * 0.05)
-        received_amount = self.amount - commission
+        commision = round(self.amount * (commisionPercent / 100))
+        receivedAmount = self.amount - commision
 
         embed = discord.Embed(
-            title=f"Передать монеты",
+            title="Передать монеты",
             description=f"{self.initiatorInteraction.user.mention}, вы отказались передавать {receivedAmount} монет пользователю {self.target_user.mention}",
             color=discord.Color.from_str("#494949"),
         )
@@ -40,7 +39,7 @@ class View(discord.ui.View):
 
         if balance < self.amount:
             embed = discord.Embed(
-                title=f"Недостаточно средств!",
+                title="Недостаточно средств!",
                 description=f"{self.initiatorInteraction.user.mention}, У вас недостаточно средств.\nНе хватает: {self.amount - balance} Монет",
                 color=discord.Color.from_str("#494949"),
             )
@@ -82,7 +81,7 @@ class View(discord.ui.View):
         receivedAmount = self.amount - commision
 
         embed = discord.Embed(
-            title=f"Передать монеты",
+            title="Передать монеты",
             description=f"{self.initiatorInteraction.user.mention}, вы отказались передавать {receivedAmount} монет пользователю {self.target_user.mention}",
             color=discord.Color.from_str("#494949"),
         )
@@ -112,7 +111,7 @@ class Give(commands.Cog):
 
         if target_user.bot:
             embed = discord.Embed(
-                title=f"Передать монеты",
+                title="Передать монеты",
                 description=f"{interaction.user.mention}, нельзя перевести монеты боту.",
                 color=discord.Color.from_str("#494949"),
             )
@@ -122,7 +121,7 @@ class Give(commands.Cog):
 
         if target_user.id == interaction.user.id:
             embed = discord.Embed(
-                title=f"Передать монеты",
+                title="Передать монеты",
                 description=f"{interaction.user.mention}, нельзя перевести монеты самому себе.",
                 color=discord.Color.from_str("#494949"),
             )
@@ -138,7 +137,7 @@ class Give(commands.Cog):
 
         if balance < amount:
             embed = discord.Embed(
-                title=f"Недостаточно средств!",
+                title="Недостаточно средств!",
                 description=f"{interaction.user.mention}, У вас недостаточно средств \nНе хватает: {amount - balance} Монет",
                 color=discord.Color.from_str("#494949"),
             )

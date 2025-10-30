@@ -1,9 +1,8 @@
-from discord import app_commands, Interaction, Embed, Color, ButtonStyle
+from discord import app_commands, Embed, Color
 from discord.ext import commands
-from discord.ui import View, Button
 import discord
 
-import dotenv, os
+import os
 
 ADMINS = os.getenv("ADMINS", "").split(",")
 
