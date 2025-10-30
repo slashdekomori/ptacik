@@ -5,7 +5,7 @@ from discord.ext import commands
 
 class PagedEmbedView(discord.ui.View):
     def __init__(self, pages: list[discord.Embed]):
-        super().__init__(timeout=None)
+        super().__init__(timeout=180)
         self.pages = pages
         self.index = 0
         self.update_buttons()
@@ -54,12 +54,16 @@ class Transactions(commands.Cog):
             await interaction.followup.send("У этого пользователя нет транзакций.")
             return
 
+        avatar = interaction.user.display_avatar.url 
+        if user is not None:
+            avatar = target.display_avatar.url
+
         per_page = 5
         pages = []
         for i in range(0, len(transactions), per_page):
             chunk = transactions[i : i + per_page]
             embed = discord.Embed(
-                title=f"Транзакции {target.name} — стр. {i // per_page + 1}",
+                title=f"Транзакции — {target.name}",
                 color=discord.Color.from_str("#494949"),
             )
             for t in chunk:
@@ -68,12 +72,13 @@ class Transactions(commands.Cog):
                 plusminus = "➕" if t.get("type") == 1 else "➖"
                 quantity = t.get("quantity", 0)
                 embed.add_field(
-                    name=f"{plusminus} {quantity}  / <t:{int(unix_ts)}:f>",
+                    name=f"{plusminus} {quantity} [<t:{int(unix_ts)}:f>]",
                     value=f"{t.get('description')}",
                     inline=False,
                 )
             pages.append(embed)
-            embed.set_thumbnail(url=interaction.user.display_avatar.url)
+            embed.set_thumbnail(url=avatar)
+            embed.set_footer(text=f"стр. {i // per_page + 1}/{round(len(transactions) / 5)}")
 
         view = PagedEmbedView(pages)
         await interaction.followup.send(embed=pages[0], view=view)

@@ -7,13 +7,26 @@ from datetime import datetime, timedelta, timezone
 commisionPercent = 5
 
 class View(discord.ui.View):
-    def __init__(self, db, initiatorInteraction, target_user, amount):
+    def __init__(self, db, initiatorInteraction, target_user, amount, timeout=180):
         super().__init__()
         self.db = db
         self.initiatorInteraction = initiatorInteraction
         self.target_user = target_user
         self.amount = amount
 
+    async def on_timeout(self):
+        """Called automatically when 180 seconds pass with no interaction."""
+        commission = round(self.amount * 0.05)
+        received_amount = self.amount - commission
+
+        embed = discord.Embed(
+            title=f"Передать монеты",
+            description=f"{self.initiatorInteraction.user.mention}, вы отказались передавать {receivedAmount} монет пользователю {self.target_user.mention}",
+            color=discord.Color.from_str("#494949"),
+        )
+        embed.set_thumbnail(url=self.initiatorInteraction.user.display_avatar.url)
+
+        await self.message.edit(embed=embed, view=None)
 
     @discord.ui.button(label="Подтвердить", style=discord.ButtonStyle.secondary)
     async def accept_callback(
