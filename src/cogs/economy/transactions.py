@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+
 class PagedEmbedView(discord.ui.View):
     def __init__(self, pages: list[discord.Embed]):
         super().__init__(timeout=None)
@@ -62,10 +63,10 @@ class Transactions(commands.Cog):
                 color=discord.Color.from_str("#494949"),
             )
             for t in chunk:
-                dt = t.get('datetime')
+                dt = t.get("datetime")
                 unix_ts = int(dt.timestamp())
-                plusminus = '➕' if t.get('type') == 1 else '➖'
-                quantity = t.get('quantity', 0)
+                plusminus = "➕" if t.get("type") == 1 else "➖"
+                quantity = t.get("quantity", 0)
                 embed.add_field(
                     name=f"{plusminus} {quantity}  / <t:{int(unix_ts)}:f>",
                     value=f"{t.get('description')}",

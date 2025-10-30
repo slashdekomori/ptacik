@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.ui import View, Button
 import discord
 
+
 class DuelAcceptView(View):
     def __init__(self, initiator: discord.User, amount: int, db):
         super().__init__(timeout=180)  # Duel request expires after 60 seconds
@@ -26,12 +27,12 @@ class DuelAcceptView(View):
             return
 
         initiatorDb = await self.db.get_user(self.initiator.id)
-        if initiatorDb['balance'] < self.amount:
+        if initiatorDb["balance"] < self.amount:
             await interaction.response.send_message(
                 "Инициатор потратил ставку до начала дуэли..."
-            ) 
+            )
             return
-            
+
         embed = Embed(
             title="Дуэль началась!",
             description=(
@@ -50,9 +51,7 @@ class Duel(commands.Cog):
         self.bot = bot
         self.db = bot.db
 
-    @app_commands.command(
-        name="duel", description="Вызвать на дуэль."
-    )
+    @app_commands.command(name="duel", description="Вызвать на дуэль.")
     @app_commands.describe(amount="Ставка на дуэль.")
     async def duel(self, interaction: Interaction, amount: int):
         await interaction.response.defer(thinking=True)

@@ -4,6 +4,7 @@ from discord.ext import commands
 
 from datetime import datetime, timedelta, timezone
 
+
 class Timely(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -16,7 +17,7 @@ class Timely(commands.Cog):
         dbUser = await self.db.get_user(interaction.user.id)
         last_claimed = dbUser["last_claimed"]
 
-        # UTC 
+        # UTC
         now = datetime.now(timezone.utc)
         next_claim = last_claimed + timedelta(hours=12)
         unix_next = int(next_claim.timestamp())
@@ -31,7 +32,7 @@ class Timely(commands.Cog):
             desc = f"{interaction.user.mention}, Вы уже забрали свою временную награду! Возвращайтесь <t:{unix_next}:R>"
 
         embed = discord.Embed(
-            title="Временная награда", 
+            title="Временная награда",
             description=desc,
             color=discord.Color.from_str("#494949"),
         )

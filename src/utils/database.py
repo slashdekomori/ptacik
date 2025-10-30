@@ -5,7 +5,7 @@ from .pydanticConfig import settings
 
 class Database:
     engine = create_async_engine(
-        settings.DATABASE_URL, 
+        settings.DATABASE_URL,
         connect_args={"server_settings": {"timezone": "UTC"}},
     )
 
