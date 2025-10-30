@@ -5,6 +5,7 @@ from discord.ext import commands
 
 commisionPercent = 5
 
+
 class View(discord.ui.View):
     def __init__(self, db, initiatorInteraction, target_user, amount, timeout=180):
         super().__init__()
@@ -69,7 +70,6 @@ class View(discord.ui.View):
 
         await interaction.response.edit_message(content=None, view=None, embed=embed)
 
-
     @discord.ui.button(label="Отмена", style=discord.ButtonStyle.danger)
     async def cancel_callback(
         self, interaction: discord.Interaction, button: discord.ui.button
@@ -90,12 +90,10 @@ class View(discord.ui.View):
         await interaction.response.edit_message(content=None, view=None, embed=embed)
 
 
-
 class Give(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
-
 
     @app_commands.command(name="give", description="Передать монеты.")
     @app_commands.describe(

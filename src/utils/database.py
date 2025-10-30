@@ -40,7 +40,10 @@ class Database:
             await self.add_user_if_not_exists(id)
 
             result = await conn.execute(
-                text("SELECT * FROM transactions WHERE discord_id = :id ORDER BY datetime DESC"), {"id": id}
+                text(
+                    "SELECT * FROM transactions WHERE discord_id = :id ORDER BY datetime DESC"
+                ),
+                {"id": id},
             )
             rows = result.mappings().all()
             return rows

@@ -54,7 +54,7 @@ class Transactions(commands.Cog):
             await interaction.followup.send("У этого пользователя нет транзакций.")
             return
 
-        avatar = interaction.user.display_avatar.url 
+        avatar = interaction.user.display_avatar.url
         if user is not None:
             avatar = target.display_avatar.url
 
@@ -78,7 +78,9 @@ class Transactions(commands.Cog):
                 )
             pages.append(embed)
             embed.set_thumbnail(url=avatar)
-            embed.set_footer(text=f"стр. {i // per_page + 1}/{round(len(transactions) / 5)}")
+            embed.set_footer(
+                text=f"стр. {i // per_page + 1}/{round(len(transactions) / 5)}"
+            )
 
         view = PagedEmbedView(pages)
         await interaction.followup.send(embed=pages[0], view=view)
