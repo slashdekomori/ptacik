@@ -27,7 +27,9 @@ class View(discord.ui.View):
         embed.set_thumbnail(url=self.initiatorInteraction.user.display_avatar.url)
 
         try:
-            await self.initiatorInteraction.edit_original_response(embed=embed, view=None)
+            await self.initiatorInteraction.edit_original_response(
+                embed=embed, view=None
+            )
         except discord.InteractionResponded:
             await self.initiatorInteraction.followup.send(embed=embed, view=None)
 
