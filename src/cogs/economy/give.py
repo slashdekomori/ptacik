@@ -8,7 +8,7 @@ commisionPercent = 5
 
 class View(discord.ui.View):
     def __init__(self, db, initiatorInteraction, target_user, amount, timeout=180):
-        super().__init__()
+        super().__init__(timeout=timeout)
         self.db = db
         self.initiatorInteraction = initiatorInteraction
         self.target_user = target_user
@@ -26,7 +26,10 @@ class View(discord.ui.View):
         )
         embed.set_thumbnail(url=self.initiatorInteraction.user.display_avatar.url)
 
-        await self.message.edit(embed=embed, view=None)
+        try:
+            await self.initiatorInteraction.edit_original_response(embed=embed, view=None)
+        except discord.InteractionResponded:
+            await self.initiatorInteraction.followup.send(embed=embed, view=None)
 
     @discord.ui.button(label="Подтвердить", style=discord.ButtonStyle.secondary)
     async def accept_callback(
@@ -63,6 +66,7 @@ class View(discord.ui.View):
         )
 
         embed = discord.Embed(
+            title="Передать монеты",
             description=f"{self.initiatorInteraction.user.mention}, вы передали {receivedAmount} монет пользователю {self.target_user.mention}",
             color=discord.Color.from_str("#494949"),
         )
