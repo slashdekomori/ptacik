@@ -2,48 +2,88 @@ from discord import app_commands, Interaction, Embed, Color, ButtonStyle
 from discord.ext import commands
 from discord.ui import View, Button
 import discord
+import random
+import asyncio
+
+commisionPercent = 5
 
 
 class DuelAcceptView(View):
-    def __init__(self, initiator: discord.User, amount: int, db):
-        super().__init__(timeout=180)  # Duel request expires after 60 seconds
-        self.initiator = initiator
+    def __init__(self, command_interaction: discord.Interaction, amount: int, db):
+        super().__init__(timeout=180) 
+        self.command_interaction = command_interaction 
         self.amount = amount
         self.db = db
 
     @discord.ui.button(label="Принять", style=ButtonStyle.green)
-    async def accept_button(self, interaction: Interaction, button: Button):
-        if interaction.user.id == self.initiator.id:
-            await interaction.response.send_message(
-                "Вы не можете принять собственную дуэль.", ephemeral=True
-            )
+    async def accept_button(self, button_interaction: discord.Interaction, button: Button):
+        if button_interaction.user.id == self.command_interaction.user.id:
             return
 
-        acceptor = await self.db.get_user(interaction.user.id)
-        if acceptor["balance"] < self.amount:
-            await interaction.response.send_message(
-                "Недостаточно средств для принятия дуэли.", ephemeral=True
+        acceptor_data = await self.db.get_user(button_interaction.user.id)
+        acceptor_balance = acceptor_data["balance"]
+        if acceptor_balance < self.amount:
+            embed = discord.Embed(
+                title="Недостаточно средств!",
+                description=f"{self.command_interaction.user.mention}, У вас недостаточно средств.\nНе хватает: {self.amount - acceptor_balance} Монет",
+                color=discord.Color.from_str("#494949"),
             )
+            embed.set_thumbnail(url=self.command_interaction.user.display_avatar.url)
+            await self.command_interaction.response.send_message(embed=embed, view=None, ephemeral=True)
+            return
+ 
+        initiator_data = await self.db.get_user(self.command_interaction.user.id)
+        initiator_balance = initiator_data["balance"]
+        if initiator_balance < self.amount:
+            embed = discord.Embed(
+                title="Недостаточно средств!",
+                description=f"{self.command_interaction.user.mention} потратил ставку до начала дуэли...\nНе хватает: {self.amount - initiator_balance} Монет",
+                color=discord.Color.from_str("#494949"),
+            )
+            await button_interaction.response.edit_message(embed=embed, view=None)
             return
 
-        initiatorDb = await self.db.get_user(self.initiator.id)
-        if initiatorDb["balance"] < self.amount:
-            await interaction.response.send_message(
-                "Инициатор потратил ставку до начала дуэли..."
-            )
-            return
+        commision = round(self.amount * (commisionPercent / 100))
+        receivedAmount = self.amount - commision
 
         embed = Embed(
             title="Дуэль началась!",
             description=(
-                f"{self.initiator.mention} и {interaction.user.mention}"
-                f"начали дуэль на **{self.amount}** монет!"
+                f"{self.command_interaction.user.mention} и {button_interaction.user.mention} начали дуэль на **{self.amount}** монет!"
             ),
-            color=Color.green(),
+            color=discord.Color.from_str("#494949"),
+        )
+        await button_interaction.response.edit_message(embed=embed, view=None)
+
+        await asyncio.sleep(3)
+
+        winner = random.choice([button_interaction, self.command_interaction])
+        loser = button_interaction if winner != button_interaction else self.command_interaction
+        await self.db.plus_balance(
+            winner.user.id,
+            receivedAmount,
+            f"Дуэль против {loser.user.mention}",
+        )
+        await self.db.minus_balance(
+            loser.user.id,
+            self.amount,
+            f"Дуэль против {winner.user.mention}",
         )
 
-        await interaction.response.edit_message(embed=embed, view=self)
-        # Here you could continue with duel logic (e.g. random winner, DB updates)
+        embed = Embed(
+            title="Дуэль",
+            description=(
+                f"{winner.user.mention} победил {loser.user.mention} и выйграл **{self.amount}** монет!"
+            ),
+            color=discord.Color.from_str("#494949"),
+        )
+        embed.set_thumbnail(url=winner.user.display_avatar.url)
+        await button_interaction.followup.edit_message(
+            message_id=button_interaction.message.id,
+            embed=embed,
+            view=None
+        )
+
 
 
 class Duel(commands.Cog):
@@ -53,24 +93,34 @@ class Duel(commands.Cog):
 
     @app_commands.command(name="duel", description="Вызвать на дуэль.")
     @app_commands.describe(amount="Ставка на дуэль.")
-    async def duel(self, interaction: Interaction, amount: int):
-        await interaction.response.defer(thinking=True)
+    async def duel(self, command_interaction: Interaction, amount: app_commands.Range[int, 10, None]):
+        await command_interaction.response.defer(thinking=True)
 
-        initiator = await self.db.get_user(interaction.user.id)
-        if initiator["balance"] < amount:
-            await interaction.followup.send(
-                "Недостаточно средств на балансе.", ephemeral=True
+        initiator_data = await self.db.get_user(command_interaction.user.id)
+        initiator_balance = initiator_data["balance"]
+
+        if initiator_balance < amount:
+            embed = discord.Embed(
+                title="Недостаточно средств!",
+                description=f"{command_interaction.user.mention}, У вас недостаточно средств.\nНе хватает: {amount - initiator_balance} Монет",
+                color=discord.Color.from_str("#494949"),
             )
+            embed.set_thumbnail(url=command_interaction.user.display_avatar.url)
+            await command_interaction.response.edit_message(embed=embed, view=None)
             return
+
+        commision = round(amount * (commisionPercent / 100))
+        receivedAmount = amount - commision
 
         embed = Embed(
             title="Дуэль",
-            description=f"{interaction.user.mention} создал дуэль на **{amount}** монет.\n",
+            description=f"{command_interaction.user.mention} создал дуэль на **{receivedAmount}** монет.\n",
             color=discord.Color.from_str("#494949"),
         )
+        embed.set_thumbnail(url=command_interaction.user.display_avatar.url)
 
-        view = DuelAcceptView(interaction.user, amount, self.db)
-        await interaction.followup.send(embed=embed, view=view)
+        view = DuelAcceptView(command_interaction, amount, self.db)
+        await command_interaction.followup.send(embed=embed, view=view)
 
 
 async def setup(bot):
