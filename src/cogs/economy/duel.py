@@ -1,4 +1,4 @@
-from discord import app_commands, Interaction, Embed, Color, ButtonStyle
+from discord import app_commands, Interaction, Embed, ButtonStyle
 from discord.ext import commands
 from discord.ui import View, Button
 import discord
@@ -10,13 +10,15 @@ commisionPercent = 5
 
 class DuelAcceptView(View):
     def __init__(self, command_interaction: discord.Interaction, amount: int, db):
-        super().__init__(timeout=180) 
-        self.command_interaction = command_interaction 
+        super().__init__(timeout=180)
+        self.command_interaction = command_interaction
         self.amount = amount
         self.db = db
 
     @discord.ui.button(label="Принять", style=ButtonStyle.green)
-    async def accept_button(self, button_interaction: discord.Interaction, button: Button):
+    async def accept_button(
+        self, button_interaction: discord.Interaction, button: Button
+    ):
         if button_interaction.user.id == self.command_interaction.user.id:
             return
 
@@ -29,9 +31,11 @@ class DuelAcceptView(View):
                 color=discord.Color.from_str("#494949"),
             )
             embed.set_thumbnail(url=self.command_interaction.user.display_avatar.url)
-            await self.command_interaction.response.send_message(embed=embed, view=None, ephemeral=True)
+            await self.command_interaction.response.send_message(
+                embed=embed, view=None, ephemeral=True
+            )
             return
- 
+
         initiator_data = await self.db.get_user(self.command_interaction.user.id)
         initiator_balance = initiator_data["balance"]
         if initiator_balance < self.amount:
@@ -58,7 +62,11 @@ class DuelAcceptView(View):
         await asyncio.sleep(3)
 
         winner = random.choice([button_interaction, self.command_interaction])
-        loser = button_interaction if winner != button_interaction else self.command_interaction
+        loser = (
+            button_interaction
+            if winner != button_interaction
+            else self.command_interaction
+        )
         await self.db.plus_balance(
             winner.user.id,
             receivedAmount,
@@ -79,11 +87,8 @@ class DuelAcceptView(View):
         )
         embed.set_thumbnail(url=winner.user.display_avatar.url)
         await button_interaction.followup.edit_message(
-            message_id=button_interaction.message.id,
-            embed=embed,
-            view=None
+            message_id=button_interaction.message.id, embed=embed, view=None
         )
-
 
 
 class Duel(commands.Cog):
@@ -93,7 +98,11 @@ class Duel(commands.Cog):
 
     @app_commands.command(name="duel", description="Вызвать на дуэль.")
     @app_commands.describe(amount="Ставка на дуэль.")
-    async def duel(self, command_interaction: Interaction, amount: app_commands.Range[int, 10, None]):
+    async def duel(
+        self,
+        command_interaction: Interaction,
+        amount: app_commands.Range[int, 10, None],
+    ):
         await command_interaction.response.defer(thinking=True)
 
         initiator_data = await self.db.get_user(command_interaction.user.id)
