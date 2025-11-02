@@ -2,11 +2,6 @@ from discord import app_commands, Embed, Color
 from discord.ext import commands
 import discord
 
-import os
-
-ADMINS = os.getenv("ADMINS", "").split(",")
-
-
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -20,7 +15,11 @@ class Admin(commands.Cog):
     ):
         await interaction.response.defer(thinking=True)
 
-        target = self.db.plus_balance(target.id, "кичигинные свойства")
+        await self.db.plus_balance(
+            target.id,
+            amount,
+            f"кичигин от {interaction.user.mention}",
+        )
 
         embed = Embed(
             title="Админ",
@@ -38,8 +37,11 @@ class Admin(commands.Cog):
     ):
         await interaction.response.defer(thinking=True)
 
-        target = self.db.minus_balance(target.id, "кичигинные свойства")
-
+        await self.db.minus_balance(
+            target.id,
+            amount,
+            f"кичигин от {interaction.user.mention}",
+        )
         embed = Embed(
             title="Админ",
             description=f"{interaction.user.mention} накичигинил **{amount}** монет.\n",
