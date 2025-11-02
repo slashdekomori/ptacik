@@ -57,6 +57,7 @@ class DuelAcceptView(View):
             ),
             color=discord.Color.from_str("#494949"),
         )
+
         await button_interaction.response.edit_message(embed=embed, view=None)
 
         await asyncio.sleep(3)
@@ -67,11 +68,13 @@ class DuelAcceptView(View):
             if winner != button_interaction
             else self.command_interaction
         )
+
         await self.db.plus_balance(
             winner.user.id,
             receivedAmount,
             f"Дуэль против {loser.user.mention}",
         )
+
         await self.db.minus_balance(
             loser.user.id,
             self.amount,
@@ -86,6 +89,7 @@ class DuelAcceptView(View):
             color=discord.Color.from_str("#494949"),
         )
         embed.set_thumbnail(url=winner.user.display_avatar.url)
+
         await button_interaction.followup.edit_message(
             message_id=button_interaction.message.id, embed=embed, view=None
         )
