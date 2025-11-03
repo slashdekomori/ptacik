@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands
 import time
 import asyncio  # 🔹 нужно для sleep
@@ -6,8 +5,9 @@ import random
 
 
 last_typing = {}
-COOLDOWN = 10 
+COOLDOWN = 10
 CHANCE = 30
+
 
 class Typing(commands.Cog):
     def __init__(self, bot):
@@ -27,8 +27,9 @@ class Typing(commands.Cog):
 
             if random.random() <= (CHANCE / 100):
                 msg = await channel.send(f"{user.mention} не пиши далбаёб")
-                await asyncio.sleep(5) 
+                await asyncio.sleep(5)
                 await msg.delete()
+
 
 async def setup(bot):
     await bot.add_cog(Typing(bot))

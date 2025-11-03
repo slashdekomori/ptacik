@@ -2,6 +2,7 @@ from discord import app_commands, Embed, Color
 from discord.ext import commands
 import discord
 
+
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
