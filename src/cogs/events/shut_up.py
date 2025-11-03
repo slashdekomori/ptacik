@@ -12,7 +12,7 @@ CHANCE = 30
 class Typing(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.db = getattr(bot, "db", None)  # если у бота есть база данных
+        self.db = bot.db 
 
     @commands.Cog.listener()
     async def on_typing(self, channel, user, when):
