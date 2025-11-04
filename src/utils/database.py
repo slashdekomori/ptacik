@@ -148,5 +148,3 @@ class Database:
                 {"discord_id": discord_id, "val": val},
             )
             await conn.commit()
-
-

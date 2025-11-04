@@ -1,8 +1,8 @@
-import discord
 from discord.ext import commands
 from datetime import datetime, timezone
 
 STATE = {}
+
 
 class VoiceTracker(commands.Cog):
     def __init__(self, bot):
@@ -10,10 +10,7 @@ class VoiceTracker(commands.Cog):
         self.db = bot.db
 
     def start_session(self, uid, now, muted=False):
-        STATE[uid] = {
-            "session_start_time": now,
-            "muted": muted
-        }
+        STATE[uid] = {"session_start_time": now, "muted": muted}
 
     async def end_session(self, uid, now):
         session = STATE.pop(uid, None)
