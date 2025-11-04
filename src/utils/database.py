@@ -118,6 +118,7 @@ class Database:
             await conn.commit()
 
     async def add_voice_time(self, discord_id: str, val: int):
+        val = int(val.total_seconds())
         if val < 0:
             return
 
@@ -131,4 +132,21 @@ class Database:
                 {"discord_id": discord_id, "val": val},
             )
             await conn.commit()
+
+    async def add_muted_voice_time(self, discord_id: str, val: int):
+        val = int(val.total_seconds())
+        if val < 0:
+            return
+
+        async with self.engine.connect() as conn:
+            await self.add_user_if_not_exists(discord_id)
+
+            await conn.execute(
+                text(
+                    "UPDATE users SET muted_time = muted_time + :val WHERE discord_id = :discord_id"
+                ),
+                {"discord_id": discord_id, "val": val},
+            )
+            await conn.commit()
+
 

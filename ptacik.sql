@@ -3,6 +3,7 @@ CREATE TABLE "users" (
   "balance" int NOT NULL DEFAULT 0,
   "last_claimed" timestamptz DEFAULT (now() - interval '13 hours'),
   "voice_time" bigint NOT NULL DEFAULT 0,
+  "muted_time" bigint NOT NULL DEFAULT 0,
   "message_count" int NOT NULL DEFAULT 0,
   "married_id" bigint
 );

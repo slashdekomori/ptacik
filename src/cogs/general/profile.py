@@ -43,7 +43,10 @@ class General(commands.Cog):
         embed.set_thumbnail(url=target.display_avatar.url)
         embed.add_field(name="Монет", value=f"```{user['balance']}```", inline=True)
         embed.add_field(
-            name="Часов:", value=f"```{user['voice_time'] // 3600}```", inline=True
+            name="Минут:", value=f"```{user['voice_time'] // 60}```", inline=True
+        )
+        embed.add_field(
+            name="Минут молча:", value=f"```{user['muted_time'] // 60}```", inline=True
         )
 
         await interaction.followup.send(embed=embed)
