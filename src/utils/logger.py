@@ -3,6 +3,7 @@ from colorama import Fore, Style, init
 
 init(autoreset=True)
 
+
 class ColoredFormatter(logging.Formatter):
     COLORS = {
         "DEBUG": Fore.LIGHTBLACK_EX,
@@ -23,6 +24,7 @@ class ColoredFormatter(logging.Formatter):
         msg = white + record.getMessage() + Style.RESET_ALL
 
         return f"{asctime} {levelname}     {msg}"
+
 
 def get_logger(name=None):
     logger = logging.getLogger(name)

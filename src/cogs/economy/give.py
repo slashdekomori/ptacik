@@ -14,9 +14,6 @@ class View(discord.ui.View):
         self.target_user = target_user
         self.amount = amount
 
-
-
-
     async def on_timeout(self):
         """Called automatically when 180 seconds pass with no interaction."""
         commision = round(self.amount * (commisionPercent / 100))
@@ -35,9 +32,6 @@ class View(discord.ui.View):
             )
         except discord.InteractionResponded:
             await self.initiatorInteraction.followup.send(embed=embed, view=None)
-
-
-
 
     @discord.ui.button(label="Подтвердить", style=discord.ButtonStyle.secondary)
     async def accept_callback(

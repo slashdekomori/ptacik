@@ -8,12 +8,14 @@ from datetime import timedelta
 from functools import wraps
 from typing import Callable, Any, Coroutine
 
+
 def with_connection(func: Callable[..., Coroutine[Any, Any, Any]]):
     """
     Decorator for async DB methods that optionally accept a connection.
     If no 'conn' is provided, it will automatically open and close one
     using self.get_connection().
     """
+
     @wraps(func)
     async def wrapper(self, *args, conn=None, **kwargs):
         conn = kwargs.get("conn")
@@ -23,8 +25,8 @@ def with_connection(func: Callable[..., Coroutine[Any, Any, Any]]):
 
         async with self.get_connection() as temp_conn:
             return await func(self, *args, conn=temp_conn, **kwargs)
-    return wrapper
 
+    return wrapper
 
 
 class Database:
@@ -41,8 +43,6 @@ class Database:
         finally:
             await conn.close()
 
-
-
     @with_connection
     async def add_user_if_not_exists(self, discord_id, conn=None):
         async with conn.begin():
@@ -56,8 +56,6 @@ class Database:
                     {"discord_id": discord_id},
                 )
 
-
-
     @with_connection
     async def get_user(self, discord_id: int, conn=None):
         await self.add_user_if_not_exists(discord_id)
@@ -67,8 +65,6 @@ class Database:
             {"discord_id": discord_id},
         )
         return result.mappings().first()
-
-
 
     @with_connection
     async def get_transactions(self, discord_id: int, conn=None):
@@ -81,8 +77,6 @@ class Database:
             {"discord_id": discord_id},
         )
         return result.mappings().all()
-
-
 
     @with_connection
     async def add_transaction(
@@ -102,8 +96,6 @@ class Database:
                 },
             )
 
-
-
     @with_connection
     async def plus_balance(
         self, discord_id: int, val: int, description: str = "Manual", conn=None
@@ -121,8 +113,6 @@ class Database:
                 {"discord_id": discord_id, "val": val},
             )
             await self.add_transaction(discord_id, 1, val, description)
-
-
 
     @with_connection
     async def minus_balance(
@@ -143,8 +133,6 @@ class Database:
             if result.rowcount > 0:
                 await self.add_transaction(discord_id, 0, val, description)
 
-
-
     @with_connection
     async def last_claimed(self, discord_id: int, val: str, conn=None):
         await self.add_user_if_not_exists(discord_id)
@@ -156,8 +144,6 @@ class Database:
                 ),
                 {"discord_id": discord_id, "val": val},
             )
-
-
 
     @with_connection
     async def add_voice_time(self, discord_id: int, val: timedelta, conn=None):
@@ -174,8 +160,6 @@ class Database:
                 ),
                 {"discord_id": discord_id, "val": val},
             )
-
-
 
     @with_connection
     async def add_muted_voice_time(self, discord_id: int, val: timedelta, conn=None):

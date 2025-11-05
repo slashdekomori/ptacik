@@ -15,8 +15,6 @@ class DuelAcceptView(View):
         self.amount = amount
         self.db = db
 
-
-
     @discord.ui.button(label="Принять", style=ButtonStyle.secondary)
     async def accept_button(
         self, button_interaction: discord.Interaction, button: Button
@@ -33,9 +31,7 @@ class DuelAcceptView(View):
                 color=discord.Color.from_str("#494949"),
             )
             embed.set_thumbnail(url=self.command_interaction.user.display_avatar.url)
-            await button_interaction.response.send_message(
-                embed=embed, ephemeral=True
-            )
+            await button_interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
         initiator_data = await self.db.get_user(self.command_interaction.user.id)
@@ -46,7 +42,9 @@ class DuelAcceptView(View):
                 description=f"{self.command_interaction.user.mention} потратил ставку до начала дуэли...\nНе хватает: {self.amount - initiator_balance} Монет",
                 color=discord.Color.from_str("#494949"),
             )
-            await button_interaction.followup.edit_message(message_id=button_interaction.message.id, embed=embed, view=None)
+            await button_interaction.followup.edit_message(
+                message_id=button_interaction.message.id, embed=embed, view=None
+            )
             return
 
         commision = round(self.amount * (commisionPercent / 100))
@@ -65,19 +63,18 @@ class DuelAcceptView(View):
 
         winner, loser = random.sample([self.command_interaction, button_interaction], 2)
 
-        
         async with self.db.get_connection() as conn:
             await self.db.plus_balance(
                 winner.user.id,
                 receivedAmount,
                 f"Дуэль против {loser.user.mention}",
-                conn=conn
+                conn=conn,
             )
             await self.db.minus_balance(
                 loser.user.id,
                 self.amount,
                 f"Дуэль против {winner.user.mention}",
-                conn=conn
+                conn=conn,
             )
 
         embed = Embed(
@@ -94,19 +91,15 @@ class DuelAcceptView(View):
         )
 
 
-
 class Duel(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
 
-
     async def on_timeout(self):
         for child in self.children:
             child.disabled = True
         await self.command_interaction.edit_original_response(view=self)
-
-
 
     @app_commands.command(name="duel", description="Вызвать на дуэль.")
     @app_commands.describe(amount="Ставка на дуэль.")
