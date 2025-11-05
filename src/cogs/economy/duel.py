@@ -71,11 +71,13 @@ class DuelAcceptView(View):
                 winner.user.id,
                 receivedAmount,
                 f"Дуэль против {loser.user.mention}",
+                conn=conn
             )
             await self.db.minus_balance(
                 loser.user.id,
                 self.amount,
                 f"Дуэль против {winner.user.mention}",
+                conn=conn
             )
 
         embed = Embed(
