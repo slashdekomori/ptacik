@@ -27,11 +27,11 @@ class DuelAcceptView(View):
         if acceptor_balance < self.amount:
             embed = discord.Embed(
                 title="Недостаточно средств!",
-                description=f"{self.command_interaction.user.mention}, У вас недостаточно средств.\nНе хватает: {self.amount - acceptor_balance} Монет",
+                description=f"{button_interaction.user.mention}, У вас недостаточно средств.\nНе хватает: {self.amount - acceptor_balance} Монет",
                 color=discord.Color.from_str("#494949"),
             )
             embed.set_thumbnail(url=self.command_interaction.user.display_avatar.url)
-            await self.command_interaction.response.send_message(
+            await button_interaction.response.send_message(
                 embed=embed, view=None, ephemeral=True
             )
             return
@@ -59,22 +59,15 @@ class DuelAcceptView(View):
         )
 
         await button_interaction.response.edit_message(embed=embed, view=None)
-
         await asyncio.sleep(3)
 
-        winner = random.choice([button_interaction, self.command_interaction])
-        loser = (
-            button_interaction
-            if winner != button_interaction
-            else self.command_interaction
-        )
+        winner, loser = random.sample([self.command_interaction, button_interaction], 2)
 
         await self.db.plus_balance(
             winner.user.id,
             receivedAmount,
             f"Дуэль против {loser.user.mention}",
         )
-
         await self.db.minus_balance(
             loser.user.id,
             self.amount,
@@ -99,6 +92,11 @@ class Duel(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
+
+    async def on_timeout(self):
+    for child in self.children:
+        child.disabled = True
+    await self.command_interaction.edit_original_response(view=self)
 
     @app_commands.command(name="duel", description="Вызвать на дуэль.")
     @app_commands.describe(amount="Ставка на дуэль.")
