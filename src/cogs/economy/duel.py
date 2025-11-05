@@ -15,7 +15,9 @@ class DuelAcceptView(View):
         self.amount = amount
         self.db = db
 
-    @discord.ui.button(label="Принять", style=ButtonStyle.green)
+
+
+    @discord.ui.button(label="Принять", style=ButtonStyle.secondary)
     async def accept_button(
         self, button_interaction: discord.Interaction, button: Button
     ):
@@ -32,7 +34,7 @@ class DuelAcceptView(View):
             )
             embed.set_thumbnail(url=self.command_interaction.user.display_avatar.url)
             await button_interaction.response.send_message(
-                embed=embed, view=None, ephemeral=True
+                embed=embed, ephemeral=True
             )
             return
 
@@ -44,7 +46,7 @@ class DuelAcceptView(View):
                 description=f"{self.command_interaction.user.mention} потратил ставку до начала дуэли...\nНе хватает: {self.amount - initiator_balance} Монет",
                 color=discord.Color.from_str("#494949"),
             )
-            await button_interaction.response.edit_message(embed=embed, view=None)
+            await button_interaction.followup.edit_message(message_id=button_interaction.message.id, embed=embed, view=None)
             return
 
         commision = round(self.amount * (commisionPercent / 100))
@@ -53,7 +55,7 @@ class DuelAcceptView(View):
         embed = Embed(
             title="Дуэль началась!",
             description=(
-                f"{self.command_interaction.user.mention} и {button_interaction.user.mention} начали дуэль на **{self.amount}** монет!"
+                f"{self.command_interaction.user.mention} и {button_interaction.user.mention} начали дуэль на **{receivedAmount}** монет!"
             ),
             color=discord.Color.from_str("#494949"),
         )
@@ -63,21 +65,23 @@ class DuelAcceptView(View):
 
         winner, loser = random.sample([self.command_interaction, button_interaction], 2)
 
-        await self.db.plus_balance(
-            winner.user.id,
-            receivedAmount,
-            f"Дуэль против {loser.user.mention}",
-        )
-        await self.db.minus_balance(
-            loser.user.id,
-            self.amount,
-            f"Дуэль против {winner.user.mention}",
-        )
+        
+        async with self.db.get_connection() as conn:
+            await self.db.plus_balance(
+                winner.user.id,
+                receivedAmount,
+                f"Дуэль против {loser.user.mention}",
+            )
+            await self.db.minus_balance(
+                loser.user.id,
+                self.amount,
+                f"Дуэль против {winner.user.mention}",
+            )
 
         embed = Embed(
             title="Дуэль",
             description=(
-                f"{winner.user.mention} победил {loser.user.mention} и выйграл **{self.amount}** монет!"
+                f"{winner.user.mention} победил {loser.user.mention} и выйграл **{receivedAmount}** монет!"
             ),
             color=discord.Color.from_str("#494949"),
         )
@@ -88,15 +92,19 @@ class DuelAcceptView(View):
         )
 
 
+
 class Duel(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
 
+
     async def on_timeout(self):
-    for child in self.children:
-        child.disabled = True
-    await self.command_interaction.edit_original_response(view=self)
+        for child in self.children:
+            child.disabled = True
+        await self.command_interaction.edit_original_response(view=self)
+
+
 
     @app_commands.command(name="duel", description="Вызвать на дуэль.")
     @app_commands.describe(amount="Ставка на дуэль.")
@@ -117,7 +125,7 @@ class Duel(commands.Cog):
                 color=discord.Color.from_str("#494949"),
             )
             embed.set_thumbnail(url=command_interaction.user.display_avatar.url)
-            await command_interaction.response.edit_message(embed=embed, view=None)
+            await command_interaction.edit_original_response(embed=embed, view=None)
             return
 
         commision = round(amount * (commisionPercent / 100))
