@@ -1,6 +1,6 @@
 FROM python:3.13-bookworm AS builder
 
-## ----- Builder Stage ----- ## 
+## Builder Stage ##
 RUN apt-get update && \
         apt-get install --no-install-recommends -y build-essential && \
         apt-get clean && \
@@ -19,7 +19,7 @@ COPY ./pyproject.toml .
 
 RUN uv sync --no-dev
 
-## ----- Production Stage ----- ##
+## Production Stage ##
 FROM python:3.13-slim-bookworm AS production
 
 RUN useradd --create-home appuser

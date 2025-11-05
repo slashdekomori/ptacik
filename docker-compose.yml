@@ -1,7 +1,7 @@
 services:
-  discord-bot:
+  ptacik:
     build: . 
-    container_name: discord-bot
+    container_name: ptacik 
     restart: unless-stopped
     env_file:
       - .env
