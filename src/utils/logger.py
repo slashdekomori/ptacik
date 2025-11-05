@@ -3,11 +3,6 @@ from colorama import Fore, Style, init
 
 init(autoreset=True)
 
-import logging
-from colorama import Fore, Style, init
-
-init(autoreset=True)
-
 class ColoredFormatter(logging.Formatter):
     COLORS = {
         "DEBUG": Fore.LIGHTBLACK_EX,
