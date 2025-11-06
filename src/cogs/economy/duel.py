@@ -5,7 +5,6 @@ import discord
 import random
 import asyncio
 
-commisionPercent = 5
 
 
 import os
@@ -13,6 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 GUILD_ID = os.getenv("GUILD_ID")
 
+commissionPercent = 5
 
 
 class DuelAcceptView(View):
@@ -54,8 +54,8 @@ class DuelAcceptView(View):
             )
             return
 
-        commision = round(self.amount * (commisionPercent / 100))
-        receivedAmount = self.amount - commision
+        commission = round(self.amount * (commissionPercent / 100))
+        receivedAmount = self.amount - commission
 
         embed = Embed(
             title="Дуэль началась!",
@@ -131,8 +131,8 @@ class Duel(commands.Cog):
             await command_interaction.edit_original_response(embed=embed, view=None)
             return
 
-        commision = round(amount * (commisionPercent / 100))
-        receivedAmount = amount - commision
+        commission = round(amount * (commissionPercent / 100))
+        receivedAmount = amount - commission
 
         embed = Embed(
             title="Дуэль",
