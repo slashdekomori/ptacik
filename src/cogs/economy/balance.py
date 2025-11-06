@@ -5,9 +5,9 @@ from discord.ext import commands
 
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 GUILD_ID = os.getenv("GUILD_ID")
-
 
 
 class Balance(commands.Cog):
@@ -15,13 +15,8 @@ class Balance(commands.Cog):
         self.bot = bot
         self.db = bot.db
 
-
-
     @app_commands.guilds(discord.Object(id=int(GUILD_ID)))
-    @app_commands.command(
-        name="balance",
-        description="Посмотреть баланс"
-    )
+    @app_commands.command(name="balance", description="Посмотреть баланс")
     @app_commands.describe(user="Пользователь о котором хотите посмотреть информацию.")
     async def balance(
         self, interaction: discord.Interaction, user: discord.User = None
@@ -49,6 +44,7 @@ class Balance(commands.Cog):
         embed.add_field(name="Монет", value=f"```{user['balance']}```", inline=True)
 
         await interaction.followup.send(embed=embed)
+
 
 async def setup(bot):
     await bot.add_cog(Balance(bot))

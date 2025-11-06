@@ -5,9 +5,9 @@ from discord.ext import commands
 
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 GUILD_ID = os.getenv("GUILD_ID")
-
 
 
 class PagedEmbedView(discord.ui.View):
@@ -40,8 +40,6 @@ class Transactions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
-
-
 
     @app_commands.guilds(discord.Object(id=int(GUILD_ID)))
     @app_commands.command(name="transactions", description="Посмотреть транзакции.")
@@ -94,7 +92,6 @@ class Transactions(commands.Cog):
 
         view = PagedEmbedView(pages)
         await interaction.followup.send(embed=pages[0], view=view)
-
 
 
 async def setup(bot):

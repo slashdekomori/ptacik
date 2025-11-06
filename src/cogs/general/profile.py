@@ -3,20 +3,17 @@ from discord import app_commands
 from discord.ext import commands
 
 
-
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 GUILD_ID = os.getenv("GUILD_ID")
-
 
 
 class Profile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
-
-
 
     @app_commands.guilds(discord.Object(id=int(GUILD_ID)))
     @app_commands.command(
@@ -53,7 +50,6 @@ class Profile(commands.Cog):
         )
 
         await interaction.followup.send(embed=embed)
-
 
 
 async def setup(bot):
