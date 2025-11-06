@@ -4,8 +4,14 @@ from utils.database import Database
 from utils.logger import get_logger
 import discord
 import sys
+import os
+
+from dotenv import load_dotenv
+load_dotenv()
+GUILD_ID = os.getenv("GUILD_ID")
 
 logger = get_logger()
+
 
 
 class Bot(commands.Bot):
@@ -15,6 +21,8 @@ class Bot(commands.Bot):
         super().__init__(
             command_prefix=commands.when_mentioned_or("!"), intents=intents
         )
+
+
 
     async def setup_hook(self):
         src_dir = Path(__file__).parent.parent
@@ -38,5 +46,6 @@ class Bot(commands.Bot):
                 logger.error(f"Failed to load extension {module}: {e}")
                 sys.exit(1)
 
-        await self.tree.sync()
+        guild = discord.Object(id=int(GUILD_ID))
+        await self.tree.sync(guild=guild)
         logger.info("Slash commands synced.")

@@ -8,6 +8,13 @@ import asyncio
 commisionPercent = 5
 
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+GUILD_ID = os.getenv("GUILD_ID")
+
+
+
 class DuelAcceptView(View):
     def __init__(self, command_interaction: discord.Interaction, amount: int, db):
         super().__init__(timeout=180)
@@ -101,6 +108,7 @@ class Duel(commands.Cog):
             child.disabled = True
         await self.command_interaction.edit_original_response(view=self)
 
+    @app_commands.guilds(discord.Object(id=int(GUILD_ID)))
     @app_commands.command(name="duel", description="Вызвать на дуэль.")
     @app_commands.describe(amount="Ставка на дуэль.")
     async def duel(

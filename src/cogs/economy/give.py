@@ -2,6 +2,11 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+GUILD_ID = os.getenv("GUILD_ID")
+
 
 commisionPercent = 5
 
@@ -101,6 +106,7 @@ class Give(commands.Cog):
         self.bot = bot
         self.db = bot.db
 
+    @app_commands.guilds(discord.Object(id=int(GUILD_ID)))
     @app_commands.command(name="give", description="Передать монеты.")
     @app_commands.describe(
         target_user="Пользователь которому хотите передать монеты.", amount="Количество"

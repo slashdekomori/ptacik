@@ -4,12 +4,18 @@ from discord.ext import commands
 
 from datetime import datetime, timedelta, timezone
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+GUILD_ID = os.getenv("GUILD_ID")
+
 
 class Timely(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
 
+    @app_commands.guilds(discord.Object(id=int(GUILD_ID)))
     @app_commands.command(name="timely", description="Ежедневная награда.")
     async def profile(self, interaction: discord.Interaction):
         await interaction.response.defer(thinking=True)

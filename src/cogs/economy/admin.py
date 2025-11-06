@@ -3,14 +3,22 @@ from discord.ext import commands
 import discord
 
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+GUILD_ID = os.getenv("GUILD_ID")
+
+
+
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
 
+    @app_commands.guilds(discord.Object(id=int(GUILD_ID)))
     @app_commands.command(name="inc", description="increment")
     @app_commands.describe(amount="amount")
-    @app_commands.describe(target=".")
+    @app_commands.describe(target=".") 
     async def inc(
         self, interaction: discord.Interaction, amount: int, target: discord.User
     ):
@@ -30,6 +38,7 @@ class Admin(commands.Cog):
 
         await interaction.followup.send(embed=embed, ephemeral=True)
 
+    @app_commands.guilds(discord.Object(id=int(GUILD_ID)))
     @app_commands.command(name="dec", description="decrement")
     @app_commands.describe(amount="amount")
     @app_commands.describe(target=".")

@@ -3,6 +3,13 @@ from discord import app_commands
 from discord.ext import commands
 
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+GUILD_ID = os.getenv("GUILD_ID")
+
+
+
 class PagedEmbedView(discord.ui.View):
     def __init__(self, pages: list[discord.Embed]):
         super().__init__(timeout=180)
@@ -34,6 +41,9 @@ class Transactions(commands.Cog):
         self.bot = bot
         self.db = bot.db
 
+
+
+    @app_commands.guilds(discord.Object(id=int(GUILD_ID)))
     @app_commands.command(name="transactions", description="Посмотреть транзакции.")
     @app_commands.describe(user="Пользователь, транзакции которого хотите посмотреть.")
     async def profile(
@@ -84,6 +94,7 @@ class Transactions(commands.Cog):
 
         view = PagedEmbedView(pages)
         await interaction.followup.send(embed=pages[0], view=view)
+
 
 
 async def setup(bot):
