@@ -3,15 +3,8 @@ from discord import app_commands
 from discord.ext import commands
 
 
-devs = [
-    749001740170559570,
-    456802396874735616,
-    1218993322442490036,
-    1108543819370205255,
-]
 
-
-class General(commands.Cog):
+class Profile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
@@ -52,5 +45,6 @@ class General(commands.Cog):
         await interaction.followup.send(embed=embed)
 
 
+
 async def setup(bot):
-    await bot.add_cog(General(bot))
+    await bot.add_cog(Profile(bot))
