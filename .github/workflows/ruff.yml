@@ -8,36 +8,15 @@ jobs:
   ruff:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0   # needed if you want to push back
 
+      - name: Run Ruff lint
       - uses: astral-sh/ruff-action@v3
         with:
-          args: check --fix
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          args: check 
 
+      - name: Check Ruff formatting
       - uses: astral-sh/ruff-action@v3
         with:
-          args: format 
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Set remote to HTTPS
-        run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-
-      - name: commit and push
-        run: |
-          git add .
-          if ! git diff --cached --quiet; then
-            git commit -m "Ruff linter"
-            git push origin HEAD
-          else
-            echo "No changes to commit"
-          fi
+          args: format --check
