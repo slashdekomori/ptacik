@@ -16,9 +16,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build image
-        run: docker compose build
-
-      - name: Push image
-        run: docker push slashdekomori/ptacik:latest
+          
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: slashdekomori/ptacik:latest
