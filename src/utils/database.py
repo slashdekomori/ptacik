@@ -2,9 +2,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 from .pydanticConfig import settings
 from contextlib import asynccontextmanager
-
 from datetime import timedelta
-
 from functools import wraps
 from typing import Callable, Any, Coroutine
 
@@ -175,4 +173,16 @@ class Database:
                     "UPDATE users SET muted_time = muted_time + :val WHERE discord_id = :discord_id"
                 ),
                 {"discord_id": discord_id, "val": val},
+            )
+
+    @with_connection
+    async def add_message(self, discord_id: int, conn=None):
+        await self.add_user_if_not_exists(discord_id)
+
+        async with conn.begin():
+            await conn.execute(
+                text(
+                    "UPDATE users SET message_count = message_count + 1 WHERE discord_id = :discord_id"
+                ),
+                {"discord_id": discord_id},
             )
