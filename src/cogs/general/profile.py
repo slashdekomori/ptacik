@@ -5,8 +5,10 @@ from discord.ext import commands
 
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 GUILD_ID = os.getenv("GUILD_ID")
+
 
 def format_short_time(seconds: int) -> str:
     hours = seconds // 3600
@@ -19,6 +21,7 @@ def format_short_time(seconds: int) -> str:
         parts.append(f"{minutes} мин")
 
     return " ".join(parts)
+
 
 class Profile(commands.Cog):
     def __init__(self, bot):
@@ -50,18 +53,14 @@ class Profile(commands.Cog):
             color=discord.Color.from_str("#494949"),
         )
 
-        voice_time = format_short_time(user['voice_time'])
-        muted_time = format_short_time(user['muted_time'])
-        balance = user['balance']
+        voice_time = format_short_time(user["voice_time"])
+        muted_time = format_short_time(user["muted_time"])
+        balance = user["balance"]
 
         embed.set_thumbnail(url=target.display_avatar.url)
         embed.add_field(name=" ·  Монет", value=f"```{balance:^29}```", inline=False)
-        embed.add_field(
-            name=" ·  Говоря", value=f"```{voice_time}```", inline=True
-        )
-        embed.add_field(
-            name=" ·  Молча", value=f"```{muted_time}```", inline=True
-        )
+        embed.add_field(name=" ·  Говоря", value=f"```{voice_time}```", inline=True)
+        embed.add_field(name=" ·  Молча", value=f"```{muted_time}```", inline=True)
         embed.add_field(
             name=" ·  Сообщений", value=f"```{user['message_count']}```", inline=True
         )

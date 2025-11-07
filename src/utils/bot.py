@@ -4,7 +4,6 @@ from utils.database import Database
 from utils.logger import get_logger
 import discord
 import sys
-import os
 
 logger = get_logger()
 
