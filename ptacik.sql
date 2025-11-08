@@ -35,4 +35,4 @@ COMMENT ON COLUMN "transactions"."type" IS '1 = +; 0 = -';
 COMMENT ON COLUMN "transactions"."description" IS 'from where';
 
 ALTER TABLE "clans" ADD FOREIGN KEY ("leader_id") REFERENCES "users" ("discord_id");
-ALTER DATABASE discord SET timezone TO 'UTC';
+ALTER DATABASE ptacik SET timezone TO 'UTC';
