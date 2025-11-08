@@ -5,18 +5,37 @@ on:
     branches: [ main ]
 
 jobs:
-  run_pull:
-    name: run pull
+  deploy:
+    name: Deploy via SSH and Docker Compose
     runs-on: ubuntu-latest
 
     steps:
-      - name: install ssh keys
+      - name: Install SSH key
         run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          ssh-keyscan -h ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: connect and pull
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} docker compose pull ptacik && docker compose up -d --no-deps --remove-orphans ptacik"
+      - name: Connect and deploy
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          set -e
+          cd ${{ secrets.WORK_DIR }}
 
-      - name: cleanup
+          echo "Pulling latest code..."
+          git fetch --all
+          git checkout ${{ secrets.MAIN_BRANCH }}
+          git pull origin ${{ secrets.MAIN_BRANCH }}
+
+          echo "Rebuilding 'ptacik' image..."
+          docker compose build ptacik
+
+          echo "Restarting 'ptacik' container..."
+          docker compose up -d ptacik
+
+          echo "Deployment complete."
+          EOF
+
+      - name: Cleanup SSH
         run: rm -rf ~/.ssh
