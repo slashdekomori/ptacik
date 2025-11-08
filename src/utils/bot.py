@@ -45,6 +45,12 @@ class Bot(commands.Bot):
             except Exception as e:
                 logger.error(f"Failed to load extension {module}: {e}")
                 sys.exit(1)
+
         guild = discord.Object(id=int(GUILD_ID))
         await self.tree.sync(guild=guild)
-        logger.info("Slash commands synced.")
+        logger.info("Guild slash commands synced.")
+
+        await self.tree.sync()
+        logger.info("Global slash commands synced.")
+
+

@@ -34,6 +34,8 @@ services:
     command: python src/main.py
     tty: true
     stdin_open: true
+    depends_on:
+      - db
     networks:
       - botnet
 
