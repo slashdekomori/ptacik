@@ -18,7 +18,6 @@ def daun_lang(s: str) -> str:
         'т': 'д',
         'ф': 'в',
         'ш': 'ж',
-        'и': 'е',
     }
     out_chars = []
     for ch in s:
@@ -42,7 +41,7 @@ class Daun(commands.Cog):
         self.bot = bot
         self.db = bot.db
 
-    # @app_commands.guilds(discord.Object(id=int(GUILD_ID)))
+    @app_commands.guilds(discord.Object(id=int(GUILD_ID)))
     @app_commands.command(
         name="daun", description="Стань дауном."
     )
