@@ -1,4 +1,28 @@
 services:
+  db:
+    image: postgres:16
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - botnet
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - botnet
+
+
   ptacik:
     build:
       context: .
@@ -8,6 +32,16 @@ services:
     env_file:
       - .env
     command: python src/main.py
-
     tty: true
     stdin_open: true
+    networks:
+      - botnet
+
+
+
+volumes:
+  db_data:
+
+networks:
+  botnet:
+    driver: bridge
