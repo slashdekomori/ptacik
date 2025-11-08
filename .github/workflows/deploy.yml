@@ -1,0 +1,22 @@
+name: Deploy Discord Bot
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  run_pull:
+    name: run pull
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: install ssh keys
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          ssh-keychain -h ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+
+      - name: connect and pull
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} docker compose pull ptacik && docker compose up -d --no-deps --remove-orphans ptacik"
+
+      - name: cleanup
+        run: rm -rf ~/.ssh
