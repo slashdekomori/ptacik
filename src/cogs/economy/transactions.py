@@ -44,7 +44,7 @@ class Transactions(commands.Cog):
     @app_commands.guilds(discord.Object(id=int(GUILD_ID)))
     @app_commands.command(name="transactions", description="Посмотреть транзакции.")
     @app_commands.describe(user="Пользователь, транзакции которого хотите посмотреть.")
-    async def profile(
+    async def transactions(
         self, interaction: discord.Interaction, user: discord.User = None
     ):
         await interaction.response.defer(thinking=True)
