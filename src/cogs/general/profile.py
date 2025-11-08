@@ -40,7 +40,7 @@ class Profile(commands.Cog):
         target = user or interaction.user
 
         if target.bot:
-            await interaction.followup.send_message(
+            await interaction.followup.send(
                 "Нельзя смотреть профиль ботов.", ephemeral=True
             )
             return
