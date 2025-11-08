@@ -8,6 +8,14 @@ import sys
 logger = get_logger()
 
 
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+GUILD_ID = os.getenv("GUILD_ID")
+
+
 class Bot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.all()
@@ -37,6 +45,5 @@ class Bot(commands.Bot):
             except Exception as e:
                 logger.error(f"Failed to load extension {module}: {e}")
                 sys.exit(1)
-
-        await self.tree.sync()
+        await self.tree.sync(id=int(GUILD_ID))
         logger.info("Slash commands synced.")
