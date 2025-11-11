@@ -1,5 +1,5 @@
 services:
-  db:
+  ptacik-db:
     image: postgres:16
     restart: always
     shm_size: 128mb
@@ -12,7 +12,24 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
-      - botnet
+      - ptacik-net 
+
+
+
+  ptacik-bot:
+    build:
+      context: ./ptacik-bot/
+      dockerfile: Dockerfile
+    container_name: ptacik-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    tty: true
+    stdin_open: true
+    networks:
+      - ptacik-net 
+
+
 
   adminer:
     image: adminer
@@ -20,30 +37,11 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - botnet
-
-
-  ptacik:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: ptacik 
-    restart: unless-stopped
-    env_file:
-      - .env
-    command: python src/main.py
-    tty: true
-    stdin_open: true
-    depends_on:
-      - db
-    networks:
-      - botnet
-
-
+      - ptacik-net
 
 volumes:
   db_data:
 
 networks:
-  botnet:
+  ptacik-net:
     driver: bridge
