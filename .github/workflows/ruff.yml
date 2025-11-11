@@ -1,5 +1,7 @@
 name: Ruff Auto Fix
-on: [push]
+
+on:
+  workflow_dispatch:
 
 permissions:
   contents: write
